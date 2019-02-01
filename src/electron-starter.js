@@ -34,6 +34,7 @@ function createWindow() {
         width: 800,
         height: 600,
         autoHideMenuBar: true,
+        frame: false,
         webPreferences: {
             nativeWindowOpen: true,
             preload: __dirname + '/preload.js'
@@ -72,18 +73,45 @@ ipcMain.on('video-playing', (event, args) => {
     let y = height - 390
     let x = 0
 
-    mainWindow.setBounds({width: 580, height: 337}); // * resize the window
-    mainWindow.setPosition(x, y) // * position to the left corner of the screen
+    mainWindow.setBounds({ width: 580, height: 337 }); // * resize the window
+    mainWindow.setPosition(x, y, true) // * position to the left corner of the screen
     mainWindow.setAlwaysOnTop(true) // * make the window always on top
     mainWindow.setMovable(false) // * dock the window
     mainWindow.setResizable(false) // * user cant resize the window manually
 })
 
+
+ipcMain.on('video-closed', (event, args) => {
+    mainWindow.setBounds({ width: 800, height: 600 }); // * resize the window
+    mainWindow.center() // * position to the left corner of the screen
+    mainWindow.setAlwaysOnTop(false) // * make the window always on top
+    mainWindow.setMovable(true) // * dock the window
+    mainWindow.setResizable(true) // * user cant resize the window manually
+})
+
+
+ipcMain.on('close', () => {
+    app.quit();
+});
+
+ipcMain.on('minimize', () => {
+    mainWindow.minimize();
+});
+
+ipcMain.on('maximize', () => {
+    if (process.platform.isDarwin) {
+        mainWindow.isFullScreen() ? mainWindow.setFullScreen(false) : mainWindow.setFullScreen(true);
+    } else {
+        mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
+    }
+});
+
+
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
+    if (!process.platform.isDarwin) {
         app.quit()
     }
 });

@@ -8,7 +8,12 @@ const { ipcRenderer } = window.require('electron');
 
 class IFrame extends Component {
     componentDidMount() {
-        ipcRenderer.send("video-playing", {})
+        ipcRenderer.send("video-playing")
+        document.querySelector("body").style= "overflow-y: hidden"
+    }
+
+    componentWillUnmount () {
+        ipcRenderer.send("video-closed")
     }
 
     render() {
@@ -16,12 +21,12 @@ class IFrame extends Component {
         const url = `https://www.youtube.com/embed/${videoId}`
 
         // ? if user pressed ESC key, close the video
-        document.addEventListener('keydown', (e) => (e.keyCode == 27 ? this.props.closeVideo() : ''))
+        
 
         return (
             <Fragment>
-                <div className="alert alert-success" role="alert" style={{marginBottom:"0px", textAlign: "center"}}>Press ESC to close the video!</div>
-                <iframe src={url} id="video" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                {/* <div className="alert alert-success" role="alert" style={{marginBottom:"0px", textAlign: "center"}}>Press ESC to close the video!</div> */}
+                <iframe src={url} onLoad={()=> document.querySelector('iframe').addEventListener('keydown', (e) => (e.keyCode == 27 ? this.props.closeVideo() : ''))} id="video" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
             </Fragment>
         );
     }
