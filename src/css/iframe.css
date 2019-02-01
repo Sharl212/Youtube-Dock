@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+}
+
+iframe, #root {
+  height: calc(100vh - 4px);
+  width: 100%;
+  box-sizing: border-box;
+}
